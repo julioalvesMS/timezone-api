@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+
+    toptal-backend:
+        container_name: toptal-backend
+        restart: always
+        build:
+            context: ./backend/
+            dockerfile: Dockerfile
+        volumes:
+            - ./backend:/app
+        ports:
+            - '8000:8000'
+        networks:
+            api-network:
+        depends_on:
+            - toptal-db
+
+    toptal-db:
+        container_name: toptal-db
+        image: postgres:13
+        restart: always
+        env_file:
+            - ./db/.env
+        volumes:
+            - ./db/data:/usr/local/pgsql/data
+            - "./db/entrypoint:/docker-entrypoint-initdb.d"
+        ports:
+            - 5432:5432
+        networks:
+            api-network:
+    
+networks:
+    api-network:
+
