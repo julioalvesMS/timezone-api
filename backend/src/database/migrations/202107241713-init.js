@@ -212,7 +212,6 @@ module.exports = {
         var index = this.pos;
         function run(transaction) {
             const commands = _commands(transaction);
-            console.log(commands)
             return new Promise(function (resolve, reject) {
                 function next() {
                     if (index < commands.length) {

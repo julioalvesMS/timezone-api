@@ -1,4 +1,4 @@
-const { checkAuthenticated } = require("../auth/auth");
+const { checkAuthenticated } = require("../auth");
 const defaultErrorHandler = require("../utils/defaultErrorHandler");
 const contextService = require('request-context');
 const contexts = require("../constants/contexts");

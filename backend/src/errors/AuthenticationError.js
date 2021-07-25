@@ -9,7 +9,7 @@ class AuthenticationError extends BusinessError {
         super(errorMessage);
         this.name = "AuthenticationError";
         this.code = codes.UNAUTHENTICATED;
-        this.status = 403;
+        this.status = 401;
     }
 }
 

@@ -42,7 +42,6 @@ module.exports = {
             ...defaultResponse,
         };
         try {
-            // setResponseTimeout(res);
             const { username, password } = req.body;
 
             const user = await User.findOne({
@@ -62,6 +61,10 @@ module.exports = {
                 throw new AuthenticationError();
 
             const jwtToken = await token.createToken(user);
+
+            user.update({
+                lastLoggedIn: Date.now()
+            })
 
             response.code = codes.SUCESS;
             response.data = {

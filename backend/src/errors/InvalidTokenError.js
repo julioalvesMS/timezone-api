@@ -9,7 +9,7 @@ class InvalidTokenError extends BusinessError {
         super(errorMessage);
         this.name = "InvalidTokenError";
         this.code = codes.INVALID_TOKEN;
-        this.status = 403;
+        this.status = 401;
     }
 }
 

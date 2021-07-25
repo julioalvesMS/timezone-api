@@ -6,7 +6,7 @@ class UnauthorizedError extends BusinessError {
         super(message);
         this.name = "UnauthorizedError";
         this.code = codes.UNAUTHORIZED
-        this.status = 401;
+        this.status = 403;
     }
 }
 
