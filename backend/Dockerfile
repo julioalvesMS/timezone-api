@@ -8,7 +8,7 @@ COPY package*.json ./
 RUN npm install --save
 
 COPY . .
-RUN npm i -g nodemon sequelize sequelize-cli dotenv --save
+RUN npm i -g nodemon sequelize sequelize-cli dotenv pg --save
 RUN npm audit fix
 EXPOSE 8000
 

@@ -4,6 +4,8 @@ require('dotenv').config({
 
 const express = require('express');
 
+require('./database');
+
 class App {
     constructor() {
         this.express = express();
@@ -18,8 +20,11 @@ class App {
         var cors = require('cors');
         this.express.use(cors());
 
-        // const contextService = require('request-context');
-        // this.express.use(contextService.middleware('request'));
+        var responseTimeout = require('./middlewares/responseTimeout');
+        this.express.use(responseTimeout);
+
+        const contextService = require('request-context');
+        this.express.use(contextService.middleware('request'));
 
         this.express.use(express.urlencoded({ extended: true }));
     }

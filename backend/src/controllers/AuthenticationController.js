@@ -1,43 +1,76 @@
-import defaultResponse from "../constants/defaultResponse";
+const token = require("../auth/token");
+const codes = require("../constants/codes");
+const defaultResponse = require("../constants/defaultResponse");
+const AuthenticationError = require("../errors/AuthenticationError");
+const DuplicateError = require("../errors/DuplicateError");
+const User = require("../models/User");
+const defaultErrorHandler = require("../utils/defaultErrorHandler");
 
 
-export default {
+module.exports = {
+
+
+    async register(req, res) {
+        let response = {
+            ...defaultResponse,
+        };
+        try {
+            const { username, password } = req.body;
+
+            const duplicateRecords = await User.findAll({
+                where: {
+                    username: username
+                }
+            })
+            if (duplicateRecords.length > 0)
+                throw new DuplicateError()
+
+            await User.create({
+                username, password,
+            })
+
+            response.code = codes.SUCESS;
+            res.send(response);
+        }
+        catch (err) {
+            defaultErrorHandler(err, req, res);
+        }
+    },
 
     async login(req, res) {
         let response = {
             ...defaultResponse,
         };
         try {
-            setResponseTimeout(res);
-            const { email, password } = req.body;
+            // setResponseTimeout(res);
+            const { username, password } = req.body;
 
-            let user = null;
-
-            user = await User.login(email, password);
-
-            if (user.employee) {
-                const token = await createToken(user.employee, constants.TOKEN_TYPES.EMPLOYEE_LOGIN);
-                employee = {
-                    ...user.employee.DataValues,
-                    token: token
+            const user = await User.findOne({
+                where: {
+                    username: username,
+                },
+                attributes: {
+                    include: ['password']
                 }
-            }
+            })
 
             if (!user)
-                throw new AuthenticationError()
+                throw new AuthenticationError();
 
+            const passwordValid = await user.validPassword(password);
+            if (!passwordValid)
+                throw new AuthenticationError();
 
-            response.status = 200;
-            response.message = "Ok";
-            response.body = {
-                user,
-                employee,
-                visitor,
+            const jwtToken = await token.createToken(user);
+
+            response.code = codes.SUCESS;
+            response.data = {
+                token: jwtToken
             };
-            res.status(response.status).send(response);
+            res.send(response);
         }
         catch (err) {
-            defaultErrorHandler(err, response, req, res);
+            defaultErrorHandler(err, req, res);
         }
     },
 

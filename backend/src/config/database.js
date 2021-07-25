@@ -1,4 +1,4 @@
-import logger from './logger'
+const logger = require('./logger')
 
 require('dotenv').config({
     path: process.env.NODE_ENV === 'test' ? '.env.test' : '.env'
@@ -22,4 +22,4 @@ database = {
     }
 }
 
-export default database;
+module.exports = database;

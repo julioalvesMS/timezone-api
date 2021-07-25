@@ -10,7 +10,6 @@ class UserToken extends Model {
             },
             idUser: DataTypes.BIGINT,
             expiryDate: DataTypes.DATE,
-            type: DataTypes.STRING,
 
             isExpired: {
                 type: DataTypes.VIRTUAL,
@@ -22,7 +21,8 @@ class UserToken extends Model {
             },
         }, {
             sequelize: connection,
-            schema: process.env.DATABASE,
+            paranoid: false,
+            updatedAt: false,
         });
     }
 

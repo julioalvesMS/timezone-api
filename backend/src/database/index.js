@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const Sequelize = require("sequelize");
+const author = require('../hooks/author');
 
 
 const database = {
@@ -30,8 +31,12 @@ fs
 
 for (let modelName in database.models) {
     const model = database.models[modelName];
-    model.associate(databases.integra.models);
+    model.associate(database.models);
+
+    database.sequelize.addHook('beforeCreate', author.onCreate);
+    database.sequelize.addHook('beforeUpdate', author.onUpdate);
+    database.sequelize.addHook('beforeDestroy', author.onDestroy);
 }
 
 
-module.exports = databases;
+module.exports = database;
