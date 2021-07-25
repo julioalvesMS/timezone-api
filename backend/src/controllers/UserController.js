@@ -97,13 +97,15 @@ module.exports = {
             if (role !== undefined && role !== record.role && userAuth.role !== roles.ADMIN)
                 throw new UnauthorizedError()
 
-            const duplicateRecords = await User.findAll({
-                where: {
-                    username: username,
-                }
-            })
-            if (duplicateRecords.length > 0)
-                throw new DuplicateError()
+            if (username !== undefined) {
+                const duplicateRecords = await User.findAll({
+                    where: {
+                        username: username,
+                    }
+                })
+                if (duplicateRecords.length > 0)
+                    throw new DuplicateError()
+            }
 
             await record.update({
                 username, password, role,

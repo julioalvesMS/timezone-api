@@ -7,7 +7,7 @@ const roles = require('../../src/constants/roles');
 const { authenticate } = require('../utils/auth');
 
 
-describe('User', () => {
+describe('User as User', () => {
 
     beforeEach(async () => {
         await truncate();
@@ -83,5 +83,50 @@ describe('User', () => {
 
         expect(response.status).toBe(403);
         expect(updatedUser.role).not.toBe(roles.ADMIN);
+    })
+
+    it('should not update other user', async () => {
+        const user = await authenticate();
+        const otherUser = await factory.create('User')
+        const newUsername = await factory.chance('string')()
+
+        const response = await request(app)
+            .put(`/users/${otherUser.id}`)
+            .authenticate(user)
+            .send({
+                username: newUsername
+            })
+
+        const updatedUser = await User.findByPk(otherUser.id)
+
+        expect(response.status).not.toBe(200);
+        expect(updatedUser.username).not.toBe(newUsername);
+    })
+
+    it('should delete user', async () => {
+        const user = await authenticate();
+
+        const response = await request(app)
+            .delete(`/users/${user.id}`)
+            .authenticate(user)
+
+        const deletedUser = await User.findByPk(user.id)
+
+        expect(response.status).toBe(200);
+        expect(deletedUser).toBe(null);
+    })
+
+    it('should not delete other user', async () => {
+        const user = await authenticate();
+        const otherUser = await factory.create('User')
+
+        const response = await request(app)
+            .delete(`/users/${otherUser.id}`)
+            .authenticate(user)
+
+        const deletedUser = await User.findByPk(otherUser.id)
+
+        expect(response.status).not.toBe(200);
+        expect(deletedUser).not.toBe(null);
     })
 });

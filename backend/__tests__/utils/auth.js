@@ -3,9 +3,11 @@ const { createToken } = require('../../src/auth/token');
 
 async function authenticate(options = {}) {
 
-    let { user } = options;
+    let { user, role } = options;
     if (user === undefined)
-        user = await factory.create('User');
+        user = await factory.create('User', {
+            role
+        });
 
 
     user.token = await createToken(user)
