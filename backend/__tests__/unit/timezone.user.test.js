@@ -62,6 +62,49 @@ describe('TimeZone as User', () => {
         expect(response.status).toBe(404);
     })
 
+    it('should create time zone', async () => {
+        const user = await authenticate();
+
+        const name = factory.chance('string')()
+        const cityName = factory.chance('city')()
+        const timeDifferenceGMT = factory.chance('floating', { fixed: 1, min: -12, max: 12 })()
+
+        const response = await request(app)
+            .post(`/timezones`)
+            .authenticate(user)
+            .send({
+                name, cityName, timeDifferenceGMT
+            })
+        
+        expect(response.status).toBe(200);
+
+        const createdRecord = await TimeZone.findByPk(response.body.data.id)
+
+        expect(createdRecord.idUser).toBe(user.id);
+        expect(createdRecord.name).toBe(name);
+        expect(createdRecord.cityName).toBe(cityName);
+        expect(createdRecord.timeDifferenceGMT).toBe(timeDifferenceGMT);
+    })
+
+    it('should not create time zone for other user', async () => {
+        const user = await authenticate();
+        const otherUser = await factory.create('User');
+
+        const name = factory.chance('string')()
+        const cityName = factory.chance('city')()
+        const timeDifferenceGMT = factory.chance('floating', { fixed: 1, min: -12, max: 12 })()
+
+        const response = await request(app)
+            .post(`/timezones`)
+            .authenticate(user)
+            .send({
+                name, cityName, timeDifferenceGMT,
+                idUser: otherUser.id
+            })
+        
+        expect(response.status).toBe(403);
+    })
+
     it('should update time zone', async () => {
         const user = await authenticate();
         const timeZone = await factory.create('TimeZone', { idUser: user.id })
@@ -74,10 +117,10 @@ describe('TimeZone as User', () => {
                 name: newName
             })
 
-        const updatedUser = await TimeZone.findByPk(timeZone.id)
+        const updatedRecord = await TimeZone.findByPk(timeZone.id)
 
         expect(response.status).toBe(200);
-        expect(updatedUser.name).toBe(newName);
+        expect(updatedRecord.name).toBe(newName);
     })
 
     it('should not update time zone from other user', async () => {
@@ -92,10 +135,10 @@ describe('TimeZone as User', () => {
                 name: newName
             })
 
-        const updatedUser = await TimeZone.findByPk(timeZone.id)
+        const updatedRecord = await TimeZone.findByPk(timeZone.id)
 
         expect(response.status).not.toBe(200);
-        expect(updatedUser.name).not.toBe(newName);
+        expect(updatedRecord.name).not.toBe(newName);
     })
 
     it('should delete time zone', async () => {

@@ -3,6 +3,9 @@ const codes = require("../constants/codes");
 const defaultResponse = require("../constants/defaultResponse");
 const TimeZone = require('../models/TimeZone');
 const NotFoundError = require('../errors/NotFoundError');
+const { user } = require('../constants/contexts');
+const roles = require('../constants/roles');
+const UnauthorizedError = require('../errors/UnauthorizedError');
 
 
 module.exports = {
@@ -13,7 +16,7 @@ module.exports = {
         try {
             const records = await TimeZone.findAll()
 
-            response.code = codes.SUCESS;
+            response.code = codes.SUCCESS;
             response.data = records;
             res.send(response);
         }
@@ -33,7 +36,7 @@ module.exports = {
             if (record === null)
                 throw new NotFoundError()
 
-            response.code = codes.SUCESS;
+            response.code = codes.SUCCESS;
             response.data = record;
             res.send(response);
         }
@@ -48,16 +51,22 @@ module.exports = {
         };
         try {
             const { userAuth } = req;
-            const { name, cityName, timeDifferenceGMT } = req.body;
+            const { name, cityName, timeDifferenceGMT, idUser } = req.body;
 
-            await TimeZone.create({
+            if (
+                idUser !== undefined &&
+                idUser !== userAuth.id &&
+                userAuth.role !== roles.ADMIN
+            )
+                throw new UnauthorizedError();
+
+            const record = await TimeZone.create({
                 name, cityName, timeDifferenceGMT,
-                idUser: userAuth.id,
-                createdBy: userAuth.id,
-                updatedBy: userAuth.id,
+                idUser: idUser ?? userAuth.id,
             })
 
-            response.code = codes.SUCESS;
+            response.code = codes.SUCCESS;
+            response.data = record;
             res.send(response);
         }
         catch (err) {
@@ -82,7 +91,8 @@ module.exports = {
                 name, cityName, timeDifferenceGMT,
             })
 
-            response.code = codes.SUCESS;
+            response.code = codes.SUCCESS;
+            response.data = record;
             res.send(response);
         }
         catch (err) {
@@ -104,7 +114,7 @@ module.exports = {
 
             record.destroy();
 
-            response.code = codes.SUCESS;
+            response.code = codes.SUCCESS;
             res.send(response);
         }
         catch (err) {

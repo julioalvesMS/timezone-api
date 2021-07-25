@@ -25,11 +25,12 @@ module.exports = {
             if (duplicateRecords.length > 0)
                 throw new DuplicateError()
 
-            await User.create({
+            const record = await User.create({
                 username, password,
             })
 
-            response.code = codes.SUCESS;
+            response.code = codes.SUCCESS;
+            response.data = record;
             res.send(response);
         }
         catch (err) {
@@ -66,7 +67,7 @@ module.exports = {
                 lastLoggedIn: Date.now()
             })
 
-            response.code = codes.SUCESS;
+            response.code = codes.SUCCESS;
             response.data = {
                 token: jwtToken
             };

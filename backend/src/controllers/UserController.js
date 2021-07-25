@@ -17,7 +17,7 @@ module.exports = {
         try {
             const records = await User.findAll()
 
-            response.code = codes.SUCESS;
+            response.code = codes.SUCCESS;
             response.data = records;
             res.send(response);
         }
@@ -38,7 +38,7 @@ module.exports = {
             if (record === null)
                 throw new NotFoundError()
 
-            response.code = codes.SUCESS;
+            response.code = codes.SUCCESS;
             response.data = record;
             res.send(response);
         }
@@ -66,13 +66,12 @@ module.exports = {
             if (duplicateRecords.length > 0)
                 throw new DuplicateError()
 
-            await User.create({
+            const record = await User.create({
                 username, password, role,
-                createdBy: userAuth.id,
-                updatedBy: userAuth.id,
             })
 
-            response.code = codes.SUCESS;
+            response.code = codes.SUCCESS;
+            response.data = record;
             res.send(response);
         }
         catch (err) {
@@ -109,10 +108,9 @@ module.exports = {
 
             await record.update({
                 username, password, role,
-                updatedBy: userAuth.id,
             })
 
-            response.code = codes.SUCESS;
+            response.code = codes.SUCCESS;
             res.send(response);
         }
         catch (err) {
@@ -134,7 +132,7 @@ module.exports = {
 
             record.destroy();
 
-            response.code = codes.SUCESS;
+            response.code = codes.SUCCESS;
             res.send(response);
         }
         catch (err) {

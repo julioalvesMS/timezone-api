@@ -53,6 +53,62 @@ describe('User as Admin', () => {
         expect(response.body.data.id).toBe(otherUser.id);
     })
 
+    it('should create other user', async () => {
+        const user = await authenticate({role: roles.ADMIN});
+
+        const username = factory.chance('word')()
+        const password = factory.chance('string')()
+        const role = roles.USER
+
+        const response = await request(app)
+            .post(`/users`)
+            .authenticate(user)
+            .send({
+                username, password, role
+            })
+        
+        expect(response.status).toBe(200);
+
+        const createdRecord = await User.findByPk(response.body.data.id, {
+            attributes: {
+                include: ['password']
+            }
+        })
+
+        expect(createdRecord.username).toBe(username);
+        expect(createdRecord.password).not.toBe(password);
+        expect(await createdRecord.validPassword(password)).toBe(true);
+        expect(createdRecord.role).toBe(role);
+    })
+
+    it('should create other admin', async () => {
+        const user = await authenticate({role: roles.ADMIN});
+
+        const username = factory.chance('word')()
+        const password = factory.chance('string')()
+        const role = roles.ADMIN
+
+        const response = await request(app)
+            .post(`/users`)
+            .authenticate(user)
+            .send({
+                username, password, role
+            })
+        
+        expect(response.status).toBe(200);
+
+        const createdRecord = await User.findByPk(response.body.data.id, {
+            attributes: {
+                include: ['password']
+            }
+        })
+
+        expect(createdRecord.username).toBe(username);
+        expect(createdRecord.password).not.toBe(password);
+        expect(await createdRecord.validPassword(password)).toBe(true);
+        expect(createdRecord.role).toBe(role);
+    })
+
     it('should update user', async () => {
         const user = await authenticate({role: roles.ADMIN});
         const newUsername = await factory.chance('string')()

@@ -1,13 +1,5 @@
 
-const UnauthorizedError = require("../errors/UnauthorizedError");
 const { verifyToken } = require("./token");
-const roles = require("../constants/roles");
-
-function checkRole(user, role) {
-    
-    if (role === roles.ADMIN && user.role !== roles.ADMIN)
-        throw new UnauthorizedError()
-}
 
 async function checkAuthenticated(req) {
     let response = {

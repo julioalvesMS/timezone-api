@@ -52,6 +52,22 @@ describe('User as User', () => {
         expect(response.status).toBe(404);
     })
 
+    it('should not create other user', async () => {
+        const user = await authenticate();
+
+        const username = factory.chance('word')()
+        const password = factory.chance('string')()
+
+        const response = await request(app)
+            .post(`/users`)
+            .authenticate(user)
+            .send({
+                username, password
+            })
+        
+        expect(response.status).toBe(403);
+    })
+
     it('should update user', async () => {
         const user = await authenticate();
         const newUsername = await factory.chance('string')()

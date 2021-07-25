@@ -2,6 +2,8 @@ const request = require('../apitest');
 const truncate = require('../utils/truncate');
 const app = require('../../src/app');
 const factory = require('../factories');
+const roles = require('../../src/constants/roles');
+const User = require('../../src/models/User');
 
 describe('Authentication', () => {
 
@@ -21,6 +23,17 @@ describe('Authentication', () => {
             })
 
         expect(response.status).toBe(200);
+
+        const createdRecord = await User.findByPk(response.body.data.id, {
+            attributes: {
+                include: ['password']
+            }
+        })
+
+        expect(createdRecord.username).toBe(username);
+        expect(createdRecord.password).not.toBe(password);
+        expect(await createdRecord.validPassword(password)).toBe(true);
+        expect(createdRecord.role).toBe(roles.USER);
     })
 
     it('should not register duplicate user', async () => {
@@ -56,6 +69,8 @@ describe('Authentication', () => {
             })
 
         expect(response.status).toBe(200);
+        expect(response.body.data.token).not.toBe(undefined);
+        expect(response.body.data.token.length).not.toBe(0);
     })
 
     it('should not login with username', async () => {
