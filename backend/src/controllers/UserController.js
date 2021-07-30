@@ -30,7 +30,6 @@ module.exports = {
             ...defaultResponse,
         };
         try {
-            const { userAuth } = req;
             const { id } = req.params;
 
             const record = await User.findByPk(id)

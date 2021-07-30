@@ -16,6 +16,8 @@ const defaultErrorHandler = (err, req, res) => {
         response.code = err.code;
         response.message = err.message;
         status = err.status;
+        if (err.data)
+            response.errors = err.data;
     }
     else {
         logger.error(err, err)

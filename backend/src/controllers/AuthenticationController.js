@@ -29,6 +29,8 @@ module.exports = {
                 username, password,
             })
 
+            record.password = null;
+
             response.code = codes.SUCCESS;
             response.data = record;
             res.send(response);
