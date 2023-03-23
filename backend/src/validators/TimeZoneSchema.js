@@ -11,9 +11,6 @@ module.exports = {
     },
     update: {
         id: commonValidators.id,
-        name: commonValidators.text,
-        cityName: commonValidators.text,
-        timeDifferenceGMT: commonValidators.timeDifferenceGMT,
     },
     delete: {
         id: commonValidators.id,

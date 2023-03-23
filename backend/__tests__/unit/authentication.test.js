@@ -73,7 +73,7 @@ describe('Authentication', () => {
         expect(response.body.data.token.length).not.toBe(0);
     })
 
-    it('should not login with username', async () => {
+    it('should not login with incorrect username', async () => {
         const password = factory.chance('string')();
 
         const user = await factory.create('User', {
